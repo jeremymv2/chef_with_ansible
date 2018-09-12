@@ -1,0 +1,11 @@
+---
+-
+  hosts: all
+  roles:
+    - sysctl
+  vars:
+    sysctl_settings:
+      -
+        name: vm.swappiness
+        value: 90
+

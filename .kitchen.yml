@@ -1,26 +1,40 @@
 ---
 driver:
-  name: vagrant
+  name: terraform
 
 provisioner:
-  name: chef_zero
-  # You may wish to disable always updating cookbooks in CI or other testing environments.
-  # For example:
-  #   always_update_cookbooks: <%= !ENV['CI'] %>
-  always_update_cookbooks: true
+  name: terraform
+
+# https://www.rubydoc.info/github/newcontext-oss/kitchen-terraform/Kitchen/Verifier/Terraform
 
 verifier:
-  name: inspec
+  name: terraform
+  systems:
+    - name: Frontend
+      backend: ssh
+      user: centos
+      show_progress: true
+      key_files:
+        - /Users/jmiller/.ssh/jmiller
+      hosts_output: frontend_server_public_dns
+      sudo: true
+      attrs_outputs:
+        frontend_server_public_ip: frontend_server_public_ip
+        backend_server_public_ip: backend_server_public_ip
+    - name: Backend
+      backend: ssh
+      user: centos
+      show_progress: true
+      key_files:
+        - /Users/jmiller/.ssh/jmiller
+      hosts_output: backend_server_public_dns
+      sudo: true
+      attrs_outputs:
+        frontend_server_public_ip: frontend_server_public_ip
+        backend_server_public_ip: backend_server_public_ip
 
 platforms:
-  - name: ubuntu-16.04
-  - name: centos-7
+  - name: centos
 
 suites:
   - name: default
-    run_list:
-      - recipe[cookbook_with_ansible::default]
-    verifier:
-      inspec_tests:
-        - test/integration/default
-    attributes:

@@ -1,0 +1,6 @@
+aws_key_pair_name = "jmiller"
+aws_key_pair_file = "~/.ssh/jmiller"
+tag_dept = "SCE"
+tag_contact = "jeremy"
+cookbook_name = "myapp_cluster"
+run_list = "myapp_cluster::default"
