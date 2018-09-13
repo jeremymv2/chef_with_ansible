@@ -17,7 +17,6 @@ data "template_file" "chef_solo_json" {
   vars {
     frontend_ip = "${aws_instance.myapp_cluster.*.public_ip[0]}"
     backend_ip = "${aws_instance.myapp_cluster.*.public_ip[1]}"
-    motd = "${var.run_list}"
     run_list = "${var.run_list}"
   }
 }

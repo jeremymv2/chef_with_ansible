@@ -1,8 +1,9 @@
+
+![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/harmony.png)
+
 # Harmonizing your Automation with Terraform, Ansible, Chef and InSpec.
 
 [Source for this repo](https://github.com/jeremymv2/chef_with_ansible)
-
-## Overview
 
 Do you have pockets of Ansible and Chef in your organization?
 
@@ -21,8 +22,6 @@ The result is lean and efficient Automation leveraging what you already have on 
 An **important** concept that allows this careful balance and harmony of tools is to house all the Automation
 for a specific App in the _same_ repository in source control. Any change triggers CI to exercise and test the
 entire suite.
-
-![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/harmony.png)
 
 ## The Phases
 
@@ -148,10 +147,9 @@ After Ansible runs, it's time to converge with the Role/Env cookbook.
  17   vars {
  18     frontend_ip = "${aws_instance.myapp_cluster.*.public_ip[0]}"
  19     backend_ip = "${aws_instance.myapp_cluster.*.public_ip[1]}"
- 20     motd = "${var.run_list}"
- 21     run_list = "${var.run_list}"
- 22   }
- 23 }
+ 20     run_list = "${var.run_list}"
+ 21   }
+ 22 }
 
  ...
 
