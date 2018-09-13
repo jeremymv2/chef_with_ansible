@@ -79,7 +79,7 @@ variable "run_list" {
 }
 
 variable "chef_version" {
-  default     = "14.4.56"
+  default     = ""
   description = "The version of Chef Client to install."
 }
 
