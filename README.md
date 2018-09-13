@@ -7,14 +7,19 @@ particular task, whereas you already have a mature Chef cookbook base that is we
 other tasks.
 
 Are you deciding if you should consolidate on just one automation tool? Perhaps you are concerned
-about how you would adequately test automation that utilized _both_ Chef and Ansible together?
+about how you would adequately test automation that utilized _both_ Chef and Ansible together.
 
 This repository demonstrates how to provision multinode infrastructure deployments using Terraform,
 Ansible and Chef together in one, multi-phased process. When provisioning is complete, the
-infrastructure will be completely verified by a holistic InSpec profile, from the same repository!
+infrastructure will be completely verified by a holistic InSpec profile, from the same repository:tada:
 
 The result is lean and efficient Automation, using the best of breed tools available on hand.
-Keeping a careful balance 
+
+An *important* concept that allows this careful balance and harmony of tools is that all the Automation
+lives in the _same_ repository in source control. Any change triggers CI to exercise and test the
+entire suite.
+
+![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/harmony.png)
 
 ## The Phases :nut_and_bolt:
 
@@ -30,12 +35,6 @@ The phases implemented in this repo are roughly:
 2. Run Ansible Playbooks
 3. Converge with Chef Cookbooks
 5. Verify with InSpec Controls
-
-An *important* concept that allows this careful balance and harmony of tools is that all the Automation
-lives in the _same_ repository in source control. Any change triggers CI to exercise and test the
-entire suite.
-
-![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/harmony.png)
 
 ## Service Discovery :cyclone:
 
