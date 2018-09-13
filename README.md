@@ -2,21 +2,22 @@
 
 ## Overview
 
-Do you have pockets of Ansible and Chef in your organization? Maybe Ansible is best suited for a
-particular task, whereas you already have a mature Chef cookbook base that is well suited for
-other tasks.
+Do you have pockets of Ansible and Chef in your organization?
 
-Are you deciding if you should consolidate on just one automation tool? Perhaps you are concerned
+Maybe you feel that Ansible is best suited for a particular task, whereas you also have a mature
+Chef cookbook base that is well suited for other tasks.
+
+Are you considering if you should consolidate on just one automation tool? Perhaps you are concerned
 about how you would adequately test automation that utilized _both_ Chef and Ansible together.
 
 This repository demonstrates how to provision multinode infrastructure deployments using Terraform,
 Ansible and Chef together in one, multi-phased process. When provisioning is complete, the
-infrastructure will be completely verified by a holistic InSpec profile, from the same repository:tada:
+infrastructure will be verified by an InSpec profile that tests all the systems holistically, in one run :tada:
 
-The result is lean and efficient Automation, using the best of breed tools available on hand.
+The result is lean and efficient Automation leveraging what you already have on hand in your organization.
 
-An *important* concept that allows this careful balance and harmony of tools is that all the Automation
-lives in the _same_ repository in source control. Any change triggers CI to exercise and test the
+An **important** concept that allows this careful balance and harmony of tools is to house all the Automation
+for a specific App in the _same_ repository in source control. Any change triggers CI to exercise and test the
 entire suite.
 
 ![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/harmony.png)
@@ -24,13 +25,13 @@ entire suite.
 ## The Phases
 
 The automation will be controlled by [kitchen-terraform](https://github.com/newcontext-oss/kitchen-terraform) allowing you
-complete control and flexibility by virtue of Terraform provisioning with an InSpec verifier that ties
-into the Terraform state.
+complete control and flexibility by virtue of powerful Terraform provisioning. An InSpec verifier (supplied with `kitchen-terraform`) ties
+into the Terraform state allowing you to leverage Terraform metadata.
 
-`kitchen-terraform` brilliantly solves the age-old inadequacies Test Kitchen has for provisioning
+`kitchen-terraform` brilliantly helps smooth over the age-old very rough edges that Test Kitchen has for provisioning
 and testing multi-node deployments.
 
-The phases implemented in this repo are roughly:
+The phases that will run in one execution of `kitchen test` are:
 1. Provision Infrastructure with Terraform Plans
 2. Run Ansible Playbooks
 3. Converge with Chef Cookbooks
@@ -38,20 +39,19 @@ The phases implemented in this repo are roughly:
 
 ## Meta-Data Discovery
 
-An additional benefit that Terraform brings to the table is rudimentary "Service Discovery" by virtue
-of being able to share meta-data in files between nodes which Ansible and Chef can later leverage during
-configuration.
+An additional benefit that Terraform provides is rudimentary "Service Discovery" by virtue
+of being able to share meta-data in files between nodes. This allows Ansible and Chef to leverage this
+data during node configuration.
 
-## Trying it out
+## Testing it out
 
-Review the Terraform Plan _defaults_ in `variables.tf` and override as needed in `terraform.tfvars`.
+Review the Terraform Plan _defaults_ in `variables.tf` and provide overrides as needed in `terraform.tfvars`.
+
 Spin it all up! This will run through _all_ the Phases listed above:
 
 ```
 kitchen test
 ```
-
-Let's review all the important parts of the `main.tf` Terraform Plan next.
 
 ### DNA
 
