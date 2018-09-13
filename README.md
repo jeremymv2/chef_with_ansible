@@ -287,6 +287,20 @@ And then leverage the Attributes in our controls:
  37     end
  38   end
  39 end
+ 40
+ 41 control 'role backend' do
+ 42   impact 0.6
+ 43   title 'Terraform Backend Role Metadata'
+ 44   desc '
+ 45     Ensure Backend role info is applied correctly.
+ 46   '
+ 47   describe 'the backend aws_instance' do
+ 48     subject { file('/etc/dna.toml') }
+ 49     it 'should have its role knowledge from Terraform' do
+ 50       expect((subject).content).to match(/iambackend/)
+ 51     end
+ 52   end
+ 53 end
 ```
 
 ![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/inspec.png)
