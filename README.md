@@ -225,7 +225,7 @@ The `.kitchen.yml` file contains the important parts that allow this to happen:
  41         - terraform inventory
 ```
 
-There is seamless integration via the `kitchen-terraform` [InSpec Verifier](https://www.rubydoc.info/github/newcontext-oss/kitchen-terraform/Kitchen/Verifier/Terraform)
+There is an existing Terraform integration via the `kitchen-terraform` [InSpec Verifier](https://www.rubydoc.info/github/newcontext-oss/kitchen-terraform/Kitchen/Verifier/Terraform)
 
 InSpec can leverage data from Terraform `outputs.tf` to discover the Node's meta data from the Terraform State.
 We use this to dynamically discover the Node IP addresses to use for the scan.
