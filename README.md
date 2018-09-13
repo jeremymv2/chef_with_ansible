@@ -289,4 +289,4 @@ And then leverage the Attributes in our controls:
  39 end
 ```
 
-![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/inspec.jpg)
+![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/inspec.png)
