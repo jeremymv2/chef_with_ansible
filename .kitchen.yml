@@ -21,6 +21,10 @@ verifier:
       attrs_outputs:
         frontend_server_public_ip: frontend_server_public_ip
         backend_server_public_ip: backend_server_public_ip
+      # we can also specify which controls run on each node
+      controls:
+        - role frontend
+        - terraform inventory
     - name: Backend
       backend: ssh
       user: centos
@@ -32,6 +36,9 @@ verifier:
       attrs_outputs:
         frontend_server_public_ip: frontend_server_public_ip
         backend_server_public_ip: backend_server_public_ip
+      controls:
+        - role backend
+        - terraform inventory
 
 platforms:
   - name: centos

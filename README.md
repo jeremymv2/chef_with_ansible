@@ -1,4 +1,4 @@
-# Harmonizing your Automation with Terraform, Ansible, Chef and InSpec. :musical_note:
+# :musical_note: Harmonizing your Automation with Terraform, Ansible, Chef and InSpec. :musical_note:
 
 ## Overview :tophat:
 
@@ -36,7 +36,7 @@ The phases implemented in this repo are roughly:
 3. Converge with Chef Cookbooks
 5. Verify with InSpec Controls
 
-## Service Discovery :cyclone:
+## Meta-Data Discovery :cyclone:
 
 An additional benefit that Terraform brings to the table is rudimentary "Service Discovery" by virtue
 of being able to share meta-data in files between nodes which Ansible and Chef can later leverage during
@@ -59,7 +59,7 @@ Give each node a programatically determined role and store on the node's filesys
 and Chef can configure the node accordingly.
 
 ```
-    ## Each node gets a DNA file to designate its role
+  4 # Each node gets a DNA file to designate its role
   5 data "template_file" "system_dna" {
   6   count = "${var.count_num}"
   7   template = "${file("${path.module}/dnatoml.tpl")}"
@@ -153,7 +153,7 @@ After Ansible runs, it's time to converge with the Role/Env cookbook.
 
  ...
 
- 157   ## Chef cookbooks
+157   ## Chef cookbooks
 158
 159   triggers {
 160     template = "${data.template_file.chef_solo_json.rendered}"
@@ -205,17 +205,24 @@ The `.kitchen.yml` file contains the important parts that allow this to happen:
  21       attrs_outputs:
  22         frontend_server_public_ip: frontend_server_public_ip
  23         backend_server_public_ip: backend_server_public_ip
- 24     - name: Backend
- 25       backend: ssh
- 26       user: centos
- 27       show_progress: true
- 28       key_files:
- 29         - /Users/jmiller/.ssh/jmiller
- 30       hosts_output: backend_server_public_dns
- 31       sudo: true
- 32       attrs_outputs:
- 33         frontend_server_public_ip: frontend_server_public_ip
- 34         backend_server_public_ip: backend_server_public_ip
+ 24       # we can also specify which controls run on each node
+ 25       controls:
+ 26         - role frontend
+ 27         - terraform inventory
+ 28     - name: Backend
+ 29       backend: ssh
+ 30       user: centos
+ 31       show_progress: true
+ 32       key_files:
+ 33         - /Users/jmiller/.ssh/jmiller
+ 34       hosts_output: backend_server_public_dns
+ 35       sudo: true
+ 36       attrs_outputs:
+ 37         frontend_server_public_ip: frontend_server_public_ip
+ 38         backend_server_public_ip: backend_server_public_ip
+ 39       controls:
+ 40         - role backend
+ 41         - terraform inventory
 ```
 
 There is seamless integration via the `kitchen-terraform` [InSpec Verifier](https://www.rubydoc.info/github/newcontext-oss/kitchen-terraform/Kitchen/Verifier/Terraform)
@@ -246,7 +253,40 @@ Also, we can create arbitrary InSpec Attributes from outputs in `outputs.tf`:
 And then leverage the Attributes in our controls:
 
 ```
-
+  6 # The Inspec reference, with examples and extensive documentation, can be
+  7 # found at http://inspec.io/docs/reference/resources/
+  8
+  9 val_frontend_server_public_ip = attribute('frontend_server_public_ip', default: '', description: 'Public IP for Frontend')
+ 10 val_backend_server_public_ip = attribute('backend_server_public_ip', default: '', description: 'Public IP for Backend')
+ 11
+ 12 control 'terraform inventory' do
+ 13   impact 0.6
+ 14   title 'Terraform State Metadata'
+ 15   desc '
+ 16     Ensure what we wanted is what we got.
+ 17   '
+ 18   describe 'each aws_instance' do
+ 19     subject { file('/tmp/NODES') }
+ 20     it 'should have all node inventory knowledge from Terraform' do
+ 21       expect((subject).content).to match(/#{val_frontend_server_public_ip}/)
+ 22       expect((subject).content).to match(/#{val_backend_server_public_ip}/)
+ 23     end
+ 24   end
+ 25 end
+ 26
+ 27 control 'role frontend' do
+ 28   impact 0.6
+ 29   title 'Terraform Frontend Role Metadata'
+ 30   desc '
+ 31     Ensure Frontend role info is applied correctly.
+ 32   '
+ 33   describe 'the frontend aws_instance' do
+ 34     subject { file('/etc/dna.toml') }
+ 35     it 'should have its role knowledge from Terraform' do
+ 36       expect((subject).content).to match(/iamfrontend/)
+ 37     end
+ 38   end
+ 39 end
 ```
 
 ![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/inspec.jpg)
