@@ -2,11 +2,20 @@ terraform {
   required_version = ">= 0.11.0"
 }
 
+data "template_file" "system_dna" {
+  count = 2
+  template = "${file("${path.module}/dnatoml.tpl")}"
+  vars {
+    role = "${element(var.instance_role, count.index)}"
+  }
+}
+
 data "template_file" "chef_solo_json" {
   template = "${file("${path.module}/solojson.tpl")}"
   vars {
     frontend_ip = "${aws_instance.myapp_cluster.*.public_ip[0]}"
     backend_ip = "${aws_instance.myapp_cluster.*.public_ip[1]}"
+    motd = "${var.run_list}"
     run_list = "${var.run_list}"
   }
 }
@@ -19,6 +28,14 @@ data "template_file" "ansible_inventory" {
     backend_ip = "${aws_instance.myapp_cluster.*.public_ip[1]}"
     key_path = "${var.aws_key_pair_file}"
     user = "${var.aws_ami_user}"
+  }
+}
+
+data "template_file" "ansible_vars" {
+  template = "${file("${path.module}/ansible_varsyml.tpl")}"
+
+  vars {
+    sysctl_vm_swappiness = "${var.ansible_var_sysctl_vm_swappiness}"
   }
 }
 
@@ -74,6 +91,7 @@ resource "aws_instance" "myapp_cluster" {
     Name      = "example-${element(var.tag_name, count.index)}-${random_id.instance.hex}"
     X-Dept    = "${var.tag_dept}"
     X-Contact = "${var.tag_contact}"
+    X-Role    = "${element(var.instance_role, count.index)}"
   }
 }
 
@@ -89,10 +107,31 @@ resource "null_resource" "provision_cluster" {
     host        = "${aws_instance.myapp_cluster.*.public_dns[count.index]}"
   }
 
+  ## DNA
+
+  triggers {
+    template = "${element(data.template_file.system_dna.*.rendered, count.index)}"
+  }
+
+  provisioner "file" {
+    content = "${element(data.template_file.system_dna.*.rendered, count.index)}"
+    destination = "/tmp/dna.toml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cp -f /tmp/dna.toml /etc"
+    ]
+  }
+
   ## Ansible tasks
 
   triggers {
     template = "${data.template_file.ansible_inventory.rendered}"
+  }
+
+  triggers {
+    template = "${data.template_file.ansible_vars.rendered}"
   }
 
   provisioner "local-exec" {
@@ -100,12 +139,16 @@ resource "null_resource" "provision_cluster" {
   }
 
   provisioner "local-exec" {
+    command = "echo '${data.template_file.ansible_vars.rendered}' > ansible_vars.yml"
+  }
+
+  provisioner "local-exec" {
     environment {
-      ANSIBLE_HOST_KEY_CHECKING = "false"
-      ANSIBLE_TIMEOUT = 20
-      ANSIBLE_SSH_RETRIES = 6
+      ANSIBLE_HOST_KEY_CHECKING = "${var.ansible_host_key_checking}"
+      ANSIBLE_TIMEOUT = "${var.ansible_timeout}"
+      ANSIBLE_SSH_RETRIES = "${var.ansible_ssh_retries}"
     }
-    command = "ansible-playbook -i inventory ${path.module}/playbook/doit.yml"
+    command = "ansible-playbook -i inventory --extra-vars '@${path.module}/ansible_vars.yml' ${path.module}/playbook/${var.ansible_playbook}"
   }
 
   ## Chef cookbooks

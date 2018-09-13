@@ -66,6 +66,14 @@ variable "aws_instance_types" {
 }
 
 ////////////////////////////////
+// Role and other DNA
+
+variable "instance_role" {
+  default     = ["iamfrontend", "iambackend"]
+  description = "An array of instance roles."
+}
+
+////////////////////////////////
 // Chef
 
 variable "cookbook_name" {
@@ -91,4 +99,32 @@ variable "backend_ip" {
 variable "frontend_ip" {
   default     = ""
   description = "The public IP address of the Frontend node"
+}
+
+////////////////////////////////
+// Ansible
+
+variable "ansible_playbook" {
+  default     = ""
+  description = "The Playbook to execute"
+}
+
+variable "ansible_timeout" {
+  default     = "20"
+  description = "Transport timeout for each ssh attempt."
+}
+
+variable "ansible_host_key_checking" {
+  default     = "false"
+  description = "Check ssh host key true|false"
+}
+
+variable "ansible_ssh_retries" {
+  default     = "6"
+  description = "Transport ssh retry attempts."
+}
+
+variable "ansible_var_sysctl_vm_swappiness" {
+  default     = "60"
+  description = "vm.swappiness setting in sysctl"
 }
