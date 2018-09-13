@@ -20,6 +20,11 @@ variable "tag_contact" {
 ////////////////////////////////
 // AWS
 
+variable "count_num" {
+  default     = 2
+  description = "The number of instances to provision."
+}
+
 variable "aws_region" {
   default     = "us-west-2"
   description = "The name of the selected AWS region / datacenter."

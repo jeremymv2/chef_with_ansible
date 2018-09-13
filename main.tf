@@ -2,14 +2,16 @@ terraform {
   required_version = ">= 0.11.0"
 }
 
+# Each node gets a DNA file to designate its role
 data "template_file" "system_dna" {
-  count = 2
+  count = "${var.count_num}"
   template = "${file("${path.module}/dnatoml.tpl")}"
   vars {
     role = "${element(var.instance_role, count.index)}"
   }
 }
 
+# Json file for chef-solo (run_list, override attributes)
 data "template_file" "chef_solo_json" {
   template = "${file("${path.module}/solojson.tpl")}"
   vars {
@@ -20,6 +22,7 @@ data "template_file" "chef_solo_json" {
   }
 }
 
+# Create an Ansible Inventory file via template
 data "template_file" "ansible_inventory" {
   template = "${file("${path.module}/inventory.tpl")}"
 
@@ -59,7 +62,7 @@ data "aws_ami" "centos" {
 }
 
 resource "aws_instance" "myapp_cluster" {
-  count = 2
+  count = "${var.count_num}"
 
   # We execute this resource twice, creating two aws_instances. We can reference each instance via count.index
   # For example: aws_instance.myapp_cluster.*.public_dns[count.index]
@@ -96,7 +99,7 @@ resource "aws_instance" "myapp_cluster" {
 }
 
 resource "null_resource" "provision_cluster" {
-  count = 2
+  count = "${var.count_num}"
 
   # We execute resource twice, once for each node. See resource "aws_instance" notes above.
   # Each time we run Ansible first, then Chef!
@@ -155,11 +158,6 @@ resource "null_resource" "provision_cluster" {
 
   triggers {
     template = "${data.template_file.chef_solo_json.rendered}"
-  }
-
-  provisioner "local-exec" {
-    working_dir = "${path.module}/cookbook/${var.cookbook_name}"
-    command = "rm -f cookbooks*gz"
   }
 
   provisioner "local-exec" {
