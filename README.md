@@ -1,4 +1,6 @@
-# :musical_note: Harmonizing your Automation with Terraform, Ansible, Chef and InSpec. :musical_note:
+# Harmonizing your Automation with Terraform, Ansible, Chef and InSpec.
+
+[Source for this repo](https://github.com/jeremymv2/chef_with_ansible)
 
 ## Overview
 
