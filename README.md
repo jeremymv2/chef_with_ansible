@@ -1,6 +1,6 @@
 # :musical_note: Harmonizing your Automation with Terraform, Ansible, Chef and InSpec. :musical_note:
 
-## Overview :tophat:
+## Overview
 
 Do you have pockets of Ansible and Chef in your organization? Maybe Ansible is best suited for a
 particular task, whereas you already have a mature Chef cookbook base that is well suited for
@@ -21,7 +21,7 @@ entire suite.
 
 ![pipeline](https://raw.githubusercontent.com/jeremymv2/chef_with_ansible/master/harmony.png)
 
-## The Phases :nut_and_bolt:
+## The Phases
 
 The automation will be controlled by [kitchen-terraform](https://github.com/newcontext-oss/kitchen-terraform) allowing you
 complete control and flexibility by virtue of Terraform provisioning with an InSpec verifier that ties
@@ -36,13 +36,13 @@ The phases implemented in this repo are roughly:
 3. Converge with Chef Cookbooks
 5. Verify with InSpec Controls
 
-## Meta-Data Discovery :cyclone:
+## Meta-Data Discovery
 
 An additional benefit that Terraform brings to the table is rudimentary "Service Discovery" by virtue
 of being able to share meta-data in files between nodes which Ansible and Chef can later leverage during
 configuration.
 
-## Trying it out :honey_pot:
+## Trying it out
 
 Review the Terraform Plan _defaults_ in `variables.tf` and override as needed in `terraform.tfvars`.
 Spin it all up! This will run through _all_ the Phases listed above:
